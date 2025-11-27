@@ -1,10 +1,10 @@
-import AdminSidebar from './AdminSidebar';
+import AdminNavbar from './AdminNavbar';
 import './AdminLayout.css';
 
 const AdminLayout = ({ children }) => {
   return (
     <div className="admin-layout">
-      <AdminSidebar />
+      <AdminNavbar />
       <div className="admin-content">
         {children}
       </div>

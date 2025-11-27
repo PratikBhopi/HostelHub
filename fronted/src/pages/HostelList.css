@@ -151,6 +151,38 @@
   cursor: pointer;
   border: 1px solid #E3E6F0;
   overflow: hidden;
+  position: relative;
+}
+
+.application-status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.status-pending {
+  background: rgba(245, 158, 11, 0.95);
+  color: white;
+}
+
+.status-accepted {
+  background: rgba(49, 196, 141, 0.95);
+  color: white;
+}
+
+.status-rejected {
+  background: rgba(240, 82, 82, 0.95);
+  color: white;
 }
 
 .hostel-card:hover {

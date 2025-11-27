@@ -69,11 +69,11 @@ export const createHostel = async (formData) => {
 };
 
 // Application APIs
-export const createApplication = async (hostelId) => {
+export const createApplication = async (applicationData) => {
   const response = await fetch(`${API_URL}/applications`, {
     method: 'POST',
     headers: getAuthHeaders(),
-    body: JSON.stringify({ hostelId })
+    body: JSON.stringify(applicationData)
   });
   return response.json();
 };
@@ -92,11 +92,26 @@ export const getAdminApplications = async () => {
   return response.json();
 };
 
+export const getApplicationById = async (id) => {
+  const response = await fetch(`${API_URL}/applications/${id}`, {
+    headers: getAuthHeaders()
+  });
+  return response.json();
+};
+
 export const updateApplicationStatus = async (id, status) => {
   const response = await fetch(`${API_URL}/applications/${id}/status`, {
     method: 'PATCH',
     headers: getAuthHeaders(),
     body: JSON.stringify({ status })
+  });
+  return response.json();
+};
+
+export const deleteApplication = async (id) => {
+  const response = await fetch(`${API_URL}/applications/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
   });
   return response.json();
 };

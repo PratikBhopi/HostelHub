@@ -3,7 +3,33 @@ import Hostel from '../models/Hostel.js';
 
 export const createApplication = async (req, res) => {
   try {
-    const { hostelId } = req.body;
+    const { 
+      hostelId,
+      fullName,
+      email,
+      phone,
+      dateOfBirth,
+      gender,
+      college,
+      course,
+      year,
+      currentAddress,
+      permanentAddress,
+      fatherName,
+      fatherPhone,
+      fatherOccupation,
+      motherName,
+      motherPhone,
+      emergencyContact,
+      preferredRoomType,
+      moveInDate,
+      duration,
+      specialRequirements,
+      hasAllergies,
+      allergiesDetails,
+      hasMedicalConditions,
+      medicalConditionsDetails
+    } = req.body;
     
     const existingApplication = await Application.findOne({
       studentId: req.user.id,
@@ -11,12 +37,36 @@ export const createApplication = async (req, res) => {
     });
 
     if (existingApplication) {
-      return res.status(400).json({ message: 'Application already exists' });
+      return res.status(400).json({ message: 'You have already applied to this hostel' });
     }
 
     const application = await Application.create({
       studentId: req.user.id,
-      hostelId
+      hostelId,
+      fullName,
+      email,
+      phone,
+      dateOfBirth,
+      gender,
+      college,
+      course,
+      year,
+      currentAddress,
+      permanentAddress,
+      fatherName,
+      fatherPhone,
+      fatherOccupation,
+      motherName,
+      motherPhone,
+      emergencyContact,
+      preferredRoomType,
+      moveInDate,
+      duration,
+      specialRequirements,
+      hasAllergies,
+      allergiesDetails,
+      hasMedicalConditions,
+      medicalConditionsDetails
     });
 
     const populatedApp = await Application.findById(application._id)
@@ -56,6 +106,31 @@ export const getAdminApplications = async (req, res) => {
   }
 };
 
+export const getApplicationById = async (req, res) => {
+  try {
+    const application = await Application.findById(req.params.id)
+      .populate('studentId', 'name email phone')
+      .populate('hostelId', 'name address price');
+
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+
+    // Check if user is authorized (either the student or the hostel owner)
+    const isStudent = req.user.id === application.studentId._id.toString();
+    const hostel = await Hostel.findById(application.hostelId._id);
+    const isOwner = hostel && hostel.adminId.toString() === req.user.id;
+
+    if (!isStudent && !isOwner) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    res.json(application);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const updateApplicationStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -78,6 +153,30 @@ export const updateApplicationStatus = async (req, res) => {
       .populate('hostelId', 'name address');
 
     res.json(updatedApp);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteApplication = async (req, res) => {
+  try {
+    const application = await Application.findById(req.params.id)
+      .populate('hostelId');
+
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+
+    // Check if user is authorized (either the student or the hostel owner)
+    const isStudent = req.user.id === application.studentId.toString();
+    const isOwner = application.hostelId.adminId.toString() === req.user.id;
+
+    if (!isStudent && !isOwner) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    await Application.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Application deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

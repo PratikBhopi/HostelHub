@@ -5,8 +5,22 @@ import './Home.css';
 const Home = () => {
   const navigate = useNavigate();
 
+  const partners = [
+    'IIT Mumbai', 'NIT Trichy', 'BITS Pilani', 'VIT Vellore', 'SRM University',
+    'Manipal Institute', 'IIIT Hyderabad', 'DTU Delhi', 'Anna University', 'Pune University'
+  ];
+
   return (
     <div className="home-container">
+      {/* Animated Grid Background */}
+      <div className="grid-background">
+        <div className="grid-line"></div>
+        <div className="grid-line"></div>
+        <div className="grid-line"></div>
+        <div className="grid-line"></div>
+        <div className="grid-line"></div>
+      </div>
+
       <div className="hero-section">
         <div className="hero-content">
           <h1 className="hero-title">Find Your Perfect Student Accommodation</h1>
@@ -51,6 +65,26 @@ const Home = () => {
             alt="Hostel accommodation"
             className="hero-img"
           />
+        </div>
+      </div>
+
+      {/* Animated Marquee */}
+      <div className="marquee-section">
+        <div className="marquee-content">
+          <div className="marquee-track">
+            {partners.map((partner, index) => (
+              <span key={index} className="marquee-item">
+                <FaStar className="marquee-icon" />
+                {partner}
+              </span>
+            ))}
+            {partners.map((partner, index) => (
+              <span key={`duplicate-${index}`} className="marquee-item">
+                <FaStar className="marquee-icon" />
+                {partner}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 

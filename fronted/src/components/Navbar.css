@@ -1,13 +1,14 @@
 .navbar {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  padding: 12px 0;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 16px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  border-bottom: 2px solid rgba(75, 107, 251, 0.3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .navbar-container {
@@ -43,8 +44,8 @@
 }
 
 .logo-text {
-  color: #FFFFFF;
-  font-size: 26px;
+  color: #1B1F2A;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.5px;
   transition: color 0.3s ease;
@@ -65,14 +66,13 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #F5F7FE;
   border-radius: 20px;
-  color: #FFFFFF;
+  color: #1B1F2A;
   font-weight: 500;
   font-size: 14px;
   margin-right: 12px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #E3E6F0;
 }
 
 .user-icon {
@@ -117,66 +117,59 @@
 
 /* Primary Button (Browse/Add) */
 .nav-btn-primary {
-  background: linear-gradient(135deg, #4B6BFB 0%, #3C54C9 100%);
+  background: #4B6BFB;
   color: white;
-  box-shadow: 0 4px 15px rgba(75, 107, 251, 0.3);
 }
 
 .nav-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(75, 107, 251, 0.4);
+  background: #3C54C9;
 }
 
 /* Secondary Button (Applications) */
 .nav-btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+  background: transparent;
+  color: #6C738A;
+  border: 1px solid transparent;
 }
 
 .nav-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: #4B6BFB;
-  transform: translateY(-2px);
+  color: #4B6BFB;
+  background: #F5F7FE;
 }
 
 /* Outline Button (Login) */
 .nav-btn-outline {
   background: transparent;
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #1B1F2A;
+  border: 1px solid #E3E6F0;
 }
 
 .nav-btn-outline:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #F5F7FE;
   border-color: #4B6BFB;
   color: #4B6BFB;
-  transform: translateY(-2px);
 }
 
 /* Solid Button (Sign Up) */
 .nav-btn-solid {
-  background: linear-gradient(135deg, #31C48D 0%, #28a574 100%);
+  background: #4B6BFB;
   color: white;
-  box-shadow: 0 4px 15px rgba(49, 196, 141, 0.3);
 }
 
 .nav-btn-solid:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(49, 196, 141, 0.4);
+  background: #3C54C9;
 }
 
 /* Logout Button */
 .nav-btn-logout {
-  background: linear-gradient(135deg, #F05252 0%, #dc2626 100%);
-  color: white;
-  box-shadow: 0 4px 15px rgba(240, 82, 82, 0.3);
+  background: transparent;
+  color: #F05252;
+  border: 1px solid #FEE2E2;
 }
 
 .nav-btn-logout:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(240, 82, 82, 0.4);
+  background: #FEE2E2;
+  color: #DC2626;
 }
 
 /* Active state for all buttons */

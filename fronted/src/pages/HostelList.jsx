@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaMapMarkerAlt, FaRupeeSign, FaUsers, FaSearch } from 'react-icons/fa';
-import { getAllHostels } from '../services/api';
+import { FaMapMarkerAlt, FaRupeeSign, FaUsers, FaSearch, FaCheckCircle, FaClock, FaTimesCircle } from 'react-icons/fa';
+import { getAllHostels, getStudentApplications } from '../services/api';
+import { AuthContext } from '../context/AuthContext';
 import './HostelList.css';
 
 const HostelList = () => {
   const [hostels, setHostels] = useState([]);
   const [filteredHostels, setFilteredHostels] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
@@ -14,21 +16,35 @@ const HostelList = () => {
     maxPrice: '',
     sortBy: ''
   });
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchHostels();
-  }, []);
+    fetchData();
+  }, [user]);
 
   useEffect(() => {
     applyFilters();
   }, [hostels, searchTerm, filters]);
 
-  const fetchHostels = async () => {
-    const data = await getAllHostels();
-    setHostels(data);
-    setFilteredHostels(data);
+  const fetchData = async () => {
+    const hostelsData = await getAllHostels();
+    setHostels(hostelsData);
+    setFilteredHostels(hostelsData);
+    
+    // Fetch student applications if logged in as student
+    if (user && user.role === 'student') {
+      const appsData = await getStudentApplications();
+      setApplications(appsData);
+    }
+    
     setLoading(false);
+  };
+
+  const getApplicationStatus = (hostelId) => {
+    if (!user || user.role !== 'student') return null;
+    const application = applications.find(app => app.hostelId._id === hostelId);
+    return application ? application.status : null;
   };
 
   const applyFilters = () => {
@@ -157,42 +173,52 @@ const HostelList = () => {
             No hostels found matching your criteria
           </div>
         ) : (
-          filteredHostels.map(hostel => (
-            <div key={hostel._id} className="hostel-card" onClick={() => navigate(`/hostels/${hostel._id}`)}>
-              {hostel.images && hostel.images.length > 0 ? (
-                <img 
-                  src={hostel.images[0].url} 
-                  alt={hostel.name}
-                  className="hostel-image"
-                />
-              ) : (
-                <div className="hostel-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px' }}>
-                  🏠
+          filteredHostels.map(hostel => {
+            const applicationStatus = getApplicationStatus(hostel._id);
+            return (
+              <div key={hostel._id} className="hostel-card" onClick={() => navigate(`/hostels/${hostel._id}`)}>
+                {applicationStatus && (
+                  <div className={`application-status-badge status-${applicationStatus.toLowerCase()}`}>
+                    {applicationStatus === 'Pending' && <><FaClock /> Applied</>}
+                    {applicationStatus === 'Accepted' && <><FaCheckCircle /> Accepted</>}
+                    {applicationStatus === 'Rejected' && <><FaTimesCircle /> Rejected</>}
+                  </div>
+                )}
+                {hostel.images && hostel.images.length > 0 ? (
+                  <img 
+                    src={hostel.images[0].url} 
+                    alt={hostel.name}
+                    className="hostel-image"
+                  />
+                ) : (
+                  <div className="hostel-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px' }}>
+                    🏠
+                  </div>
+                )}
+                <div className="hostel-content">
+                  <h3>{hostel.name}</h3>
+                  <p className="hostel-address">
+                    <FaMapMarkerAlt /> {hostel.address}
+                  </p>
+                  <p className="hostel-description">{hostel.description}</p>
+                  <div className="hostel-info">
+                    <span className="hostel-price">
+                      <FaRupeeSign /> {hostel.price}/month
+                    </span>
+                    <span className="hostel-capacity">
+                      <FaUsers /> {hostel.capacity}
+                    </span>
+                  </div>
+                  <button onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/hostels/${hostel._id}`);
+                  }}>
+                    View Details
+                  </button>
                 </div>
-              )}
-              <div className="hostel-content">
-                <h3>{hostel.name}</h3>
-                <p className="hostel-address">
-                  <FaMapMarkerAlt /> {hostel.address}
-                </p>
-                <p className="hostel-description">{hostel.description}</p>
-                <div className="hostel-info">
-                  <span className="hostel-price">
-                    <FaRupeeSign /> {hostel.price}/month
-                  </span>
-                  <span className="hostel-capacity">
-                    <FaUsers /> {hostel.capacity}
-                  </span>
-                </div>
-                <button onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/hostels/${hostel._id}`);
-                }}>
-                  View Details
-                </button>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

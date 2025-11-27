@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { getAdminApplications, updateApplicationStatus } from '../services/api';
+import { getAdminApplications, updateApplicationStatus, deleteApplication } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
-import { FaFilter } from 'react-icons/fa';
+import ApplicationDetailModal from '../components/ApplicationDetailModal';
+import { FaFilter, FaEye, FaTrash } from 'react-icons/fa';
 import './AdminApplications.css';
 
 const AdminApplications = () => {
@@ -11,6 +12,7 @@ const AdminApplications = () => {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [hostels, setHostels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedApplication, setSelectedApplication] = useState(null);
   const [filters, setFilters] = useState({
     status: 'All',
     hostel: 'All'
@@ -55,7 +57,35 @@ const AdminApplications = () => {
 
   const handleStatusUpdate = async (id, status) => {
     await updateApplicationStatus(id, status);
+    setSelectedApplication(null);
     fetchData();
+  };
+
+  const handleViewDetails = async (appId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/applications/${appId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setSelectedApplication(data);
+    } catch (error) {
+      console.error('Error fetching application details:', error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await deleteApplication(id);
+      fetchData();
+      alert('Application deleted successfully');
+    } catch (error) {
+      console.error('Error deleting application:', error);
+      alert('Failed to delete application');
+    }
   };
 
   if (loading) {
@@ -126,27 +156,54 @@ const AdminApplications = () => {
               <p className="app-date">
                 Applied: {new Date(app.createdAt).toLocaleDateString()}
               </p>
-              {app.status === 'Pending' && (
-                <div className="action-buttons">
-                  <button 
-                    className="accept-btn"
-                    onClick={() => handleStatusUpdate(app._id, 'Accepted')}
-                  >
-                    Accept
-                  </button>
-                  <button 
-                    className="reject-btn"
-                    onClick={() => handleStatusUpdate(app._id, 'Rejected')}
-                  >
-                    Reject
-                  </button>
-                </div>
-              )}
+              <div className="action-buttons">
+                <button 
+                  className="view-btn"
+                  onClick={() => handleViewDetails(app._id)}
+                >
+                  <FaEye /> View Details
+                </button>
+                {app.status === 'Pending' && (
+                  <>
+                    <button 
+                      className="accept-btn"
+                      onClick={() => handleStatusUpdate(app._id, 'Accepted')}
+                    >
+                      Accept
+                    </button>
+                    <button 
+                      className="reject-btn"
+                      onClick={() => handleStatusUpdate(app._id, 'Rejected')}
+                    >
+                      Reject
+                    </button>
+                  </>
+                )}
+                <button 
+                  className="delete-btn"
+                  onClick={() => handleDelete(app._id)}
+                >
+                  <FaTrash /> Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
       </div>
+
+      {/* Application Detail Modal */}
+      {selectedApplication && (
+        <ApplicationDetailModal
+          application={selectedApplication}
+          onClose={() => setSelectedApplication(null)}
+          onStatusUpdate={handleStatusUpdate}
+          onDelete={(id) => {
+            handleDelete(id);
+            setSelectedApplication(null);
+          }}
+        />
+      )}
     </AdminLayout>
   );
 };
